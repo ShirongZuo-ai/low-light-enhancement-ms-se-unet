@@ -1,0 +1,6 @@
+method,average_psnr,average_ssim,average_inference_time
+gamma,12.366115,0.637292,0.000252
+clahe,9.173310,0.379503,0.005226
+retinex,14.466908,0.534199,0.308217
+unet,20.391704,0.802071,0.005154
+ms_se_unet,20.535383,0.814197,0.012599

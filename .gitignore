@@ -1,0 +1,29 @@
+.venv/
+__pycache__/
+*.pyc
+
+# Local datasets and raw downloads
+data/LOL/
+data/raw/
+*.zip
+
+# Model checkpoints
+checkpoints/*.pth
+results/**/*.pth
+
+# Generated app outputs and large visual result folders
+results/app_outputs/
+results/**/*.png
+results/**/*.jpg
+results/**/*.jpeg
+results/stage*/
+
+# Local credentials and secrets
+~/.kaggle/
+.kaggle/
+kaggle.json
+access_token
+.env
+
+# Local Gradio runtime files
+.gradio/

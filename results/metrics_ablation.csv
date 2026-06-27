@@ -1,0 +1,4 @@
+model,multiscale,se_attention,loss,average_psnr,average_ssim,average_inference_time
+unet_baseline,False,False,L1,20.391704,0.802071,0.005154
+ms_se_unet_l1,True,True,L1,19.851169,0.780094,0.013368
+ms_se_unet_combined,True,True,Combined,20.535383,0.814197,0.012599
