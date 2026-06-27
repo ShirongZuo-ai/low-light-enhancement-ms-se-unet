@@ -86,17 +86,13 @@ The web demo supports:
 - Saving enhanced images to `results/app_outputs/`.
 - Optional temporary public sharing through Gradio.
 
+![Gradio Demo](assets/gradio_demo.png)
+
 The app loads the following checkpoints at startup if available:
 
 ```text
 checkpoints/unet_best.pth
 checkpoints/ms_se_unet_best.pth
-```
-
-Gradio screenshot note: no app screenshot is currently included in this repository snapshot. For a polished GitHub page, run the app locally and save a screenshot as:
-
-```text
-assets/gradio_demo.png
 ```
 
 ## Installation
