@@ -27,3 +27,6 @@ access_token
 
 # Local Gradio runtime files
 .gradio/
+
+# Large original video asset (use compressed version instead)
+assets/hero_memory_light_original.mp4

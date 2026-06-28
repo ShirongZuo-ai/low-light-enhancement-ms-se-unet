@@ -14,7 +14,8 @@ The demo style is intentionally soft and human-centered: it presents low-light e
 - Combined loss support: L1 + SSIM + Color + TV.
 - Unified PSNR, SSIM, and inference-time evaluation.
 - Ablation study table generation.
-- Warm Gradio demo with upload, method selection, histogram comparison, and result saving.
+- **app.py**: Warm Gradio demo with upload, method selection, histogram comparison, and result saving.
+- **app_v3.py**: Premium product landing page with Hero video, animated cards, and auth-protected sharing.
 - Checkpoint resume support for training.
 
 ## Method
@@ -23,20 +24,21 @@ The main improved model is `MultiScaleSEUNet`, a U-Net style architecture enhanc
 
 - **Multi-scale feature extraction**: parallel convolution branches capture details at different receptive fields.
 - **SE channel attention**: channel-wise feature recalibration helps the model focus on useful enhancement cues.
-- **Combined Loss**: combines pixel fidelity, structural similarity, color consistency, and total variation regularization.
+- **Combined Loss**: combines pixel fidelity (L1), structural similarity (SSIM), color consistency, and total variation (TV) regularization.
 - **Photo restoration prototype UI**: the Gradio app frames low-light enhancement as a warm memory restoration workflow.
 
 ## Project Structure
 
 ```text
 .
-├── assets/                         # Small README display images
+├── assets/                         # Small README display images + Hero video
 ├── data/                           # Dataset root, ignored except small examples
 ├── methods/                        # Gamma, CLAHE, Retinex
 ├── models/                         # U-Net and MS-SE-U-Net
-├── scripts/                        # Evaluation, comparison, ablation scripts
+├── scripts/                        # Evaluation, comparison, ablation, video generation
 ├── utils/                          # Dataset, losses, metrics
-├── app.py                          # Gradio demo
+├── app.py                          # Gradio demo (basic)
+├── app_v3.py                       # Gradio demo (premium landing page)
 ├── infer.py                        # Traditional method inference
 ├── train.py                        # Training entry point
 ├── test.py                         # Testing and metrics entry point
@@ -76,6 +78,8 @@ The MS-SE-U-Net with Combined Loss achieves the best PSNR and SSIM, suggesting t
 
 ## Gradio Demo
 
+### app.py — Basic Demo
+
 The web demo supports:
 
 - Uploading one low-light image.
@@ -88,12 +92,65 @@ The web demo supports:
 
 ![Gradio Demo](assets/gradio_demo.png)
 
+### app_v3.py — Premium Product Landing Page
+
+A polished, Apple-editorial-style landing page with warm ivory + soft gray tones, designed for product demos and team presentations.
+
+Features:
+- **Hero section** with cinematic video background (auto-fallback to static imagery if video is missing)
+- **Overview cards** describing each enhancement method
+- **AI Restoration Workspace** — the interactive upload/enhance UI, styled with soft shadows and rounded cards
+- **Metrics table** showing comparison results inline
+- **Footer** with project attribution
+
+How to run:
+
+```bash
+# Local test
+python app_v3.py
+
+# LAN access (accessible from other devices on the same network)
+python app_v3.py --server-name 0.0.0.0
+
+# Public share with password protection
+python app_v3.py --share --auth demo 123456
+
+# Custom port
+python app_v3.py --server-port 7861
+```
+
+Hero video behavior:
+- If `assets/hero_memory_light.mp4` exists (≤10MB recommended), the Hero section automatically plays it as a cinematic background.
+- If the video file is missing, the Hero falls back to a static gradient background — the app runs normally with no errors.
+
 The app loads the following checkpoints at startup if available:
 
 ```text
 checkpoints/unet_best.pth
 checkpoints/ms_se_unet_best.pth
 ```
+
+### Sharing with Teammates
+
+To share the demo with teammates temporarily (72-hour Gradio public link):
+
+```bash
+# Basic sharing (unauthenticated)
+python app_v3.py --share
+
+# Password-protected sharing (recommended)
+python app_v3.py --share --auth demo 123456
+```
+
+Keep your terminal and WSL session running while sharing. The public link is intended for temporary demos only — do not upload private or sensitive photos.
+
+If you need to share on LAN (same WiFi):
+
+```bash
+python app_v3.py --server-name 0.0.0.0 --server-port 7860
+```
+
+Teammates can then access: `http://<your-LAN-IP>:7860`
 
 ## Installation
 
@@ -200,6 +257,8 @@ python scripts/make_ablation_table.py
 
 ## Launch Web App
 
+### Basic app.py
+
 Local or LAN demo:
 
 ```bash
@@ -232,6 +291,21 @@ python app.py --share --auth demo 123456
 
 When using public sharing, keep the computer and WSL terminal running. The public link is intended only for temporary demos; do not upload private photos.
 
+### Premium app_v3.py
+
+See the [Gradio Demo — app_v3.py](#app_v3py--premium-product-landing-page) section above for detailed run and share instructions.
+
+## Hero Video Generation (Optional)
+
+The premium landing page (`app_v3.py`) can display a cinematic hero background video. To generate the video:
+
+```bash
+export MINIMAX_API_KEY="your-key-here"
+python scripts/generate_hero_video_minimax.py
+```
+
+The script uses the MiniMax-Hailuo-2.3 API (pay-as-you-go) to create `assets/hero_memory_light.mp4`. This step is entirely optional — if no video file is present, `app_v3.py` gracefully falls back to a static gradient background.
+
 ## Notes About Checkpoints and Dataset
 
 This repository intentionally excludes large files:
@@ -241,6 +315,7 @@ This repository intentionally excludes large files:
 - `checkpoints/*.pth`
 - generated result images
 - `results/app_outputs/`
+- `assets/hero_memory_light_original.mp4` (large original video)
 
 To reproduce deep learning results, place trained checkpoints under `checkpoints/` with names such as:
 
@@ -251,6 +326,28 @@ checkpoints/ms_se_unet_l1_best.pth
 ```
 
 Small CSV metrics may be kept for documentation, while large image folders and `.pth` files should not be committed.
+
+## Security Notes
+
+Do **not** commit the following to Git:
+
+| Category | Examples |
+| --- | --- |
+| API keys | `MINIMAX_API_KEY`, OpenAI `sk-...` keys, `kaggle.json` |
+| Environment files | `.env`, `access_token` |
+| Datasets | `data/LOL/`, `data/raw/`, `*.zip` |
+| Model weights | `checkpoints/*.pth`, `results/**/*.pth` |
+| Large results | `results/app_outputs/`, `results/stage*/`, bulk `*.png`/`*.jpg` |
+| Virtual environment | `.venv/`, `__pycache__/`, `*.pyc` |
+| Large videos | `assets/hero_memory_light_original.mp4` |
+
+All of the above are covered by `.gitignore`. Before committing, verify with:
+
+```bash
+git status --short
+find . -type f -size +20M | grep -v '.venv/'
+grep -rn "sk-" . --exclude-dir=.git --exclude-dir=.venv || echo "Clean"
+```
 
 ## Future Work
 
